@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carte Fidélité</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FF6600">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #111;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .container { max-width: 340px; }
+    .logo {
+      font-size: 32px;
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .logo span { color: #FF6600; }
+    .sous-titre {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 40px;
+    }
+    .input-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+    label {
+      font-size: 12px;
+      color: #FF6600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: block;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: white;
+      font-size: 15px;
+    }
+    input:focus { outline: none; border-color: #FF6600; }
+    button {
+      width: 100%;
+      padding: 16px;
+      background: #FF6600;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .message {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">DWICH <span>BRO</span></div>
+    <div class="sous-titre">Votre carte de fidélité digitale</div>
+    <div class="input-group">
+      <label>Prénom</label>
+      <input type="text" id="prenom" placeholder="Votre prénom"/>
+    </div>
+    <div class="input-group">
+      <label>Nom</label>
+      <input type="text" id="nom" placeholder="Votre nom"/>
+    </div>
+    <button onclick="creerCarte()">Obtenir ma carte</button>
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    function creerCarte() {
+      var prenom = document.getElementById('prenom').value.trim();
+      var nom = document.getElementById('nom').value.trim();
+      if (!prenom || !nom) {
+        document.getElementById('message').textContent = 'Remplis tous les champs !';
+        return;
+      }
+      document.getElementById('message').textContent = 'Création en cours...';
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/nouveau-client?nom=' + encodeURIComponent(nom) + '&prenom=' + encodeURIComponent(prenom) + '&commerce=BroDwich', true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var data = JSON.parse(xhr.responseText);
+          window.location.href = '/carte-visuelle/' + data.clientId;
+        }
+      };
+      xhr.send();
+    }
+  </script>
+</body>
+</html>

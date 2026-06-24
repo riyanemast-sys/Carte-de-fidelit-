@@ -1,0 +1,22 @@
+{
+  "name": "Carte Fidélité BroDwich",
+  "short_name": "BroDwich",
+  "description": "Votre carte de fidélité BroDwich",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FF6600",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/FF6600/ffffff?text=DB",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/FF6600/ffffff?text=DB",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

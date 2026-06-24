@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carte Fidélité</title>
+  <link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#FF6600">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BroDwich">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #eee;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .carte {
+      background: #fff;
+      border-radius: 16px;
+      width: 340px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    }
+    .header {
+      padding: 20px 20px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid #eee;
+    }
+    .logo-nom {
+      font-size: 22px;
+      font-weight: 900;
+      color: #111;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .logo-nom span { color: #FF6600; }
+    .logo-sous {
+      font-size: 10px;
+      color: #999;
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .header-droite {
+      text-align: right;
+    }
+    .infos-label {
+      font-size: 10px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .bandeau {
+      background: #FF6600;
+      padding: 20px;
+      color: white;
+    }
+    .bandeau-titre {
+      font-size: 32px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .bandeau-sous {
+      font-size: 12px;
+      margin-top: 4px;
+      opacity: 0.85;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .membre-section {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+    }
+    .membre-label {
+      font-size: 10px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .membre-nom {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111;
+    }
+    .points-label {
+      font-size: 10px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: right;
+      margin-bottom: 4px;
+    }
+    .points-valeur {
+      font-size: 28px;
+      font-weight: 900;
+      color: #111;
+      text-align: right;
+    }
+    .adresse-section {
+      padding: 10px 20px;
+      font-size: 12px;
+      color: #999;
+      border-bottom: 1px solid #eee;
+    }
+    .qr-section {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .qr-section img {
+      width: 160px;
+      height: 160px;
+    }
+    .client-id {
+      font-size: 12px;
+      color: #888;
+      font-family: monospace;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="carte">
+    <div class="header" style="background:#000; padding:16px 20px;">
+      <div>
+        <div class="logo-nom" style="color:#fff;">DWICH <span>BRO</span></div>
+        <div class="logo-sous" style="color:#FF6600;">Carte de fidélité</div>
+      </div>
+    </div>
+    <div class="bandeau">
+      <div class="bandeau-titre">FIDÉLITÉ</div>
+      <div class="bandeau-sous">Cumulez des points à chaque visite</div>
+    </div>
+    <div class="membre-section">
+      <div>
+        <div class="membre-label">Membre</div>
+        <div class="membre-nom" id="client-nom">---</div>
+      </div>
+      <div>
+        <div class="points-label">Points</div>
+        <div class="points-valeur" id="points">0</div>
+      </div>
+    </div>
+    <div class="adresse-section">📍 12 rue de la Gare, Valenciennes</div>
+    <div class="qr-section">
+      <img id="qrcode" src="" alt="QR Code"/>
+      <div class="client-id" id="client-id">Client N°---</div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      var parts = window.location.pathname.split('/');
+      var clientId = parts[parts.length - 1];
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/carte/' + clientId, true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var data = JSON.parse(xhr.responseText);
+          document.getElementById('client-nom').textContent = (data.prenom || '') + ' ' + (data.nom || '');
+          document.getElementById('points').textContent = data.tampons * 100;
+          document.getElementById('client-id').textContent = 'Client N°' + clientId.substring(0, 12).toUpperCase();
+          document.getElementById('qrcode').src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + encodeURIComponent('http://localhost:3000/carte-visuelle/' + clientId);
+        }
+      };
+      xhr.send();
+    };
+  </script>
+</body>
+</html>
