@@ -6,6 +6,8 @@
   <title>Carte Fidélité</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#FF6600">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="BroDwich">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -19,7 +21,7 @@
       text-align: center;
       padding: 20px;
     }
-    .container { max-width: 340px; }
+    .container { max-width: 340px; width: 100%; }
     .logo {
       font-size: 32px;
       font-weight: 900;
@@ -81,36 +83,42 @@
     <div class="logo">DWICH <span>BRO</span></div>
     <div class="sous-titre">Votre carte de fidélité digitale</div>
     <div class="input-group">
-  <label>Prénom</label>
-  <input type="text" id="prenom" placeholder="Votre prénom"/>
-</div>
-<div class="input-group">
-  <label>Nom</label>
-  <input type="text" id="nom" placeholder="Votre nom"/>
-</div>
-<div class="input-group">
-  <label>Téléphone</label>
-  <input type="tel" id="tel" placeholder="Votre numéro de téléphone"/>
-</div>
-<button onclick="creerCarte()">Obtenir ma carte</button>
+      <label>Prénom</label>
+      <input type="text" id="prenom" placeholder="Votre prénom"/>
+    </div>
+    <div class="input-group">
+      <label>Nom</label>
+      <input type="text" id="nom" placeholder="Votre nom"/>
+    </div>
+    <div class="input-group">
+      <label>Téléphone</label>
+      <input type="tel" id="tel" placeholder="Votre numéro de téléphone"/>
+    </div>
+    <button onclick="creerCarte()">Obtenir ma carte</button>
     <div class="message" id="message"></div>
   </div>
 
   <script>
+    var clientIdSauvegarde = localStorage.getItem('clientId');
+    if (clientIdSauvegarde) {
+      window.location.href = '/carte-visuelle/' + clientIdSauvegarde;
+    }
+
     function creerCarte() {
       var prenom = document.getElementById('prenom').value.trim();
       var nom = document.getElementById('nom').value.trim();
+      var tel = document.getElementById('tel').value.trim();
       if (!prenom || !nom) {
         document.getElementById('message').textContent = 'Remplis tous les champs !';
         return;
       }
       document.getElementById('message').textContent = 'Création en cours...';
-      var tel = document.getElementById('tel').value.trim();
-var xhr = new XMLHttpRequest();
-xhr.open('GET', '/nouveau-client?nom=' + encodeURIComponent(nom) + '&prenom=' + encodeURIComponent(prenom) + '&tel=' + encodeURIComponent(tel) + '&commerce=BroDwich', true);
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/nouveau-client?nom=' + encodeURIComponent(nom) + '&prenom=' + encodeURIComponent(prenom) + '&tel=' + encodeURIComponent(tel) + '&commerce=BroDwich', true);
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
           var data = JSON.parse(xhr.responseText);
+          localStorage.setItem('clientId', data.clientId);
           window.location.href = '/carte-visuelle/' + data.clientId;
         }
       };
