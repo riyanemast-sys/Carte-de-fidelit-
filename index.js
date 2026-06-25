@@ -59,6 +59,15 @@ app.post('/tampon/:clientId', (req, res) => {
   res.json({ message: recompense ? '🎉 Récompense débloquée !' : 'Tampon ajouté !', tampons, recompense });
 });
 
+app.get('/tous-les-clients', (req, res) => {
+  const clients = db.get('clients').value();
+  res.json(clients || []);
+});
+
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
 app.get('/carte-visuelle/:clientId', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'carte.html'));
 });
@@ -66,15 +75,7 @@ app.get('/carte-visuelle/:clientId', (req, res) => {
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-app.get('/tous-les-clients', (req, res) => {
-  db.get('clients').value() !== undefined
-    ? res.json(db.get('clients').value())
-    : res.json([]);
-});
 
-app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
 app.listen(PORT, () => {
   console.log(`✅ Serveur lancé sur http://localhost:${PORT}`);
 });
