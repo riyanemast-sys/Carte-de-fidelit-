@@ -81,14 +81,18 @@
     <div class="logo">DWICH <span>BRO</span></div>
     <div class="sous-titre">Votre carte de fidélité digitale</div>
     <div class="input-group">
-      <label>Prénom</label>
-      <input type="text" id="prenom" placeholder="Votre prénom"/>
-    </div>
-    <div class="input-group">
-      <label>Nom</label>
-      <input type="text" id="nom" placeholder="Votre nom"/>
-    </div>
-    <button onclick="creerCarte()">Obtenir ma carte</button>
+  <label>Prénom</label>
+  <input type="text" id="prenom" placeholder="Votre prénom"/>
+</div>
+<div class="input-group">
+  <label>Nom</label>
+  <input type="text" id="nom" placeholder="Votre nom"/>
+</div>
+<div class="input-group">
+  <label>Téléphone</label>
+  <input type="tel" id="tel" placeholder="Votre numéro de téléphone"/>
+</div>
+<button onclick="creerCarte()">Obtenir ma carte</button>
     <div class="message" id="message"></div>
   </div>
 
@@ -101,8 +105,9 @@
         return;
       }
       document.getElementById('message').textContent = 'Création en cours...';
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', '/nouveau-client?nom=' + encodeURIComponent(nom) + '&prenom=' + encodeURIComponent(prenom) + '&commerce=BroDwich', true);
+      var tel = document.getElementById('tel').value.trim();
+var xhr = new XMLHttpRequest();
+xhr.open('GET', '/nouveau-client?nom=' + encodeURIComponent(nom) + '&prenom=' + encodeURIComponent(prenom) + '&tel=' + encodeURIComponent(tel) + '&commerce=BroDwich', true);
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
           var data = JSON.parse(xhr.responseText);
