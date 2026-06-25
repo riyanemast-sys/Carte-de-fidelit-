@@ -66,7 +66,15 @@ app.get('/carte-visuelle/:clientId', (req, res) => {
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+app.get('/tous-les-clients', (req, res) => {
+  db.get('clients').value() !== undefined
+    ? res.json(db.get('clients').value())
+    : res.json([]);
+});
 
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
 app.listen(PORT, () => {
   console.log(`✅ Serveur lancé sur http://localhost:${PORT}`);
 });

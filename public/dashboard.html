@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - BroDwich</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #111;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      min-height: 100vh;
+    }
+    .header {
+      background: #000;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #FF6600;
+    }
+    .logo { font-size: 20px; font-weight: 900; text-transform: uppercase; }
+    .logo span { color: #FF6600; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding: 24px;
+    }
+    .stat-card {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid #333;
+    }
+    .stat-valeur {
+      font-size: 36px;
+      font-weight: 900;
+      color: #FF6600;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .section {
+      padding: 0 24px 24px;
+    }
+    .section-titre {
+      font-size: 14px;
+      color: #FF6600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+    .scanner-box {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #333;
+      margin-bottom: 24px;
+    }
+    .scanner-input {
+      display: flex;
+      gap: 10px;
+    }
+    input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #111;
+      color: white;
+      font-size: 14px;
+    }
+    input:focus { outline: none; border-color: #FF6600; }
+    button {
+      padding: 12px 20px;
+      background: #FF6600;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .message {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #FF6600;
+      min-height: 20px;
+    }
+    .clients-liste {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .client-card {
+      background: #1a1a1a;
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .client-nom { font-size: 15px; font-weight: 600; }
+    .client-tel { font-size: 12px; color: #888; margin-top: 2px; }
+    .client-droite { text-align: right; }
+    .client-points { font-size: 20px; font-weight: 900; color: #FF6600; }
+    .client-points-label { font-size: 11px; color: #888; }
+    .btn-tampon {
+      padding: 8px 14px;
+      background: #FF6600;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">DWICH <span>BRO</span> — Dashboard</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-valeur" id="total-clients">0</div>
+      <div class="stat-label">Clients</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-valeur" id="total-points">0</div>
+      <div class="stat-label">Points distribués</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-valeur" id="total-recompenses">0</div>
+      <div class="stat-label">Récompenses</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-titre">Ajouter un tampon</div>
+    <div class="scanner-box">
+      <div class="scanner-input">
+        <input type="text" id="client-id-input" placeholder="Colle l'ID client ici..."/>
+        <button onclick="ajouterTampon()">+1 Tampon</button>
+      </div>
+      <div class="message" id="message"></div>
+    </div>
+
+    <div class="section-titre">Tous les clients</div>
+    <div class="clients-liste" id="clients-liste">
+      <div style="color:#888; font-size:13px;">Chargement...</div>
+    </div>
+  </div>
+
+  <script>
+    function chargerClients() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/tous-les-clients', true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var clients = JSON.parse(xhr.responseText);
+          
+          document.getElementById('total-clients').textContent = clients.length;
+          var totalPoints = clients.reduce(function(acc, c) { return acc + c.tampons * 100; }, 0);
+          document.getElementById('total-points').textContent = totalPoints;
+
+          var liste = document.getElementById('clients-liste');
+          if (clients.length === 0) {
+            liste.innerHTML = '<div style="color:#888; font-size:13px;">Aucun client encore</div>';
+            return;
+          }
+
+          liste.innerHTML = '';
+          clients.forEach(function(client) {
+            var card = document.createElement('div');
+            card.className = 'client-card';
+            card.innerHTML = `
+              <div>
+                <div class="client-nom">${client.prenom} ${client.nom}</div>
+                <div class="client-tel">${client.tel || 'Pas de tel'}</div>
+                <div class="client-tel" style="font-size:10px;margin-top:4px">${client.id.substring(0,8).toUpperCase()}</div>
+              </div>
+              <div class="client-droite">
+                <div class="client-points">${client.tampons * 100}</div>
+                <div class="client-points-label">points</div>
+                <button class="btn-tampon" onclick="ajouterTamponId('${client.id}')">+1</button>
+              </div>
+            `;
+            liste.appendChild(card);
+          });
+        }
+      };
+      xhr.send();
+    }
+
+    function ajouterTampon() {
+      var clientId = document.getElementById('client-id-input').value.trim();
+      if (!clientId) return;
+      ajouterTamponId(clientId);
+    }
+
+    function ajouterTamponId(clientId) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/tampon/' + clientId, true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var data = JSON.parse(xhr.responseText);
+          document.getElementById('message').textContent = data.message;
+          chargerClients();
+        }
+      };
+      xhr.send();
+    }
+
+    chargerClients();
+    setInterval(chargerClients, 10000);
+  </script>
+</body>
+</html>
