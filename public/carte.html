@@ -173,7 +173,7 @@
           document.getElementById('client-nom').textContent = (data.prenom || '') + ' ' + (data.nom || '');
           document.getElementById('points').textContent = data.tampons * 100;
           document.getElementById('client-id').textContent = 'Client N°' + clientId.substring(0, 12).toUpperCase();
-          document.getElementById('qrcode').src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + encodeURIComponent('http://localhost:3000/carte-visuelle/' + clientId);
+          document.getElementById('qrcode').src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + encodeURIComponent(window.location.origin + '/carte-visuelle/' + clientId);
         }
       };
       xhr.send();
